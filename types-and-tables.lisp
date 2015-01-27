@@ -46,10 +46,10 @@
              (:conc-name hdt-)
              (:constructor make-hdt (counts offsets symbols bits)))
   ;; FIXME: look into combining these two into one array for speed.
-  (counts #1=(error "required parameter")
+  (counts (error "required parameter")
           :type (simple-array (unsigned-byte 16) (#.+max-code-length+))
           :read-only t)
-  (offsets #1# :type (simple-array (unsigned-byte 16) (#.(1+ +max-code-length+)))
+  (offsets (error "required parameter") :type (simple-array (unsigned-byte 16) (#.(1+ +max-code-length+)))
            :read-only t)
   (symbols nil :read-only t :type (simple-array fixnum (*)))
   (bits nil :read-only t))
@@ -159,16 +159,17 @@
           (return-from decode-value (aref (hdt-symbols table)
                                           #+sbcl
                                           (sb-ext:truly-the fixnum
-                                                            #3=(+ (aref (hdt-offsets table) (1- len))
+                                                            (+ (aref (hdt-offsets table) (1- len))
                                                                   (- code first)))
-                                          #-sbcl #3#)))
+                                          #-sbcl (+ (aref (hdt-offsets table) (1- len))
+                                                                  (- code first)))))
         (setf first
               #+sbcl (sb-ext:truly-the fixnum (+ first count))
               #-sbcl (+ first count)
               first
-              #+sbcl (sb-ext:truly-the fixnum #1=(ash first 1))
-              #-sbcl #1#
+              #+sbcl (sb-ext:truly-the fixnum (ash first 1))
+              #-sbcl (ash first 1)
               code
-              #+sbcl (sb-ext:truly-the fixnum #2=(ash code 1))
-              #-sbcl #2#
+              #+sbcl (sb-ext:truly-the fixnum (ash code 1))
+              #-sbcl (ash code 1)
               len (1+ len))))))

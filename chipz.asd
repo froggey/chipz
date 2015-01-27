@@ -37,8 +37,8 @@
                (:file "inflate" :depends-on ("inflate-state"
                                              "gzip" "zlib"
                                              "conditions"))
-               (:file "bzip2" :depends-on ("dstate" "constants"))
+               #-mezzano (:file "bzip2" :depends-on ("dstate" "constants"))
                (:file "decompress" :depends-on ("inflate-state"
-                                                "inflate" "bzip2"))
+                                                "inflate" #-mezzano"bzip2"))
                #+(or sbcl lispworks openmcl cmu allegro)
                (:file "stream" :depends-on ("inflate-state" "inflate"))))
